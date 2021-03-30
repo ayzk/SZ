@@ -45,7 +45,7 @@ int getDIA_Data(DynamicIntArray *dia, size_t pos)
 	return dia->array[pos];
 }
 
-void addDIA_Data(DynamicIntArray *dia, int value)
+inline void addDIA_Data(DynamicIntArray *dia, int value)
 {
 	if(dia->size==dia->capacity)
 	{

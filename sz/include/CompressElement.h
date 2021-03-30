@@ -53,6 +53,7 @@ short computeGroupNum_double(double value);
 void listAdd_double(double last3CmprsData[3], double value);
 void listAdd_float(float last3CmprsData[3], float value);
 void listAdd_int(int64_t last3CmprsData[3], int64_t value);
+void listAdd_int32(int32_t last3CmprsData[3], int32_t value);
 void listAdd_float_group(float *groups, int *flags, char groupNum, float oriValue, float decValue, char* curGroupID);
 void listAdd_double_group(double *groups, int *flags, char groupNum, double oriValue, double decValue, char* curGroupID);
 

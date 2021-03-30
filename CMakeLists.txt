@@ -82,6 +82,10 @@ add_subdirectory(example)
 
 option(BUILD_PYTHON_WRAPPER "build python wrapper" OFF)
 if(BUILD_PYTHON_WRAPPER)
+  message(WARNING "The python bindings for SZ are deprecated.  "
+                  "Please consider using the Python bindings for "
+                  "[LibPressio](https://github.com/codarcode/libpressio#python)"
+                  " to use SZ from python instead.")
   add_subdirectory(swig)
 endif()
 

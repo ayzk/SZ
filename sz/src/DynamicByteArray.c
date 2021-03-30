@@ -35,7 +35,7 @@ void free_DBA(DynamicByteArray *dba)
 	free(dba);
 }
 
-unsigned char getDBA_Data(DynamicByteArray *dba, size_t pos)
+inline unsigned char getDBA_Data(DynamicByteArray *dba, size_t pos)
 {
 	if(pos>=dba->size)
 	{
@@ -45,7 +45,7 @@ unsigned char getDBA_Data(DynamicByteArray *dba, size_t pos)
 	return dba->array[pos];
 }
 
-void addDBA_Data(DynamicByteArray *dba, unsigned char value)
+inline void addDBA_Data(DynamicByteArray *dba, unsigned char value)
 {
 	if(dba->size==dba->capacity)
 	{
@@ -56,7 +56,7 @@ void addDBA_Data(DynamicByteArray *dba, unsigned char value)
 	dba->size ++;
 }
 
-void memcpyDBA_Data(DynamicByteArray *dba, unsigned char* data, size_t length)
+inline void memcpyDBA_Data(DynamicByteArray *dba, unsigned char* data, size_t length)
 {
 	if(dba->size + length > dba->capacity)
 	{

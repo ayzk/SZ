@@ -10,6 +10,8 @@ SZ: Error-bounded Lossy Compressor for HPC Data
 ## Citations
 **Kindly note: If you mention SZ in your paper, the most appropriate citation is including these three references (***BigData 2018, IPDPS 2017 and IPDPS 2016***), because they cover the whole design and implementation of the latest version of SZ**.
 
+* SZauto: Kai Zhao, Sheng Di, Xin Liang, Sihuan Li, Dingwen Tao, Zizhong Chen, and Franck Cappello. "[Significantly Improving Lossy Compression for HPC Datasets with Second-Order Prediction and Parameter Optimization](https://dl.acm.org/doi/10.1145/3369583.3392688)", Proceedings of the 29th International Symposium on High-Performance Parallel and Distributed Computing (HPDC 20), Stockholm, Sweden, 2020. (code: https://github.com/szcompressor/SZauto/)
+
 * SZ 2.0+: Xin Liang, Sheng Di, Dingwen Tao, Zizhong Chen, Franck Cappello, "[Error-Controlled Lossy Compression Optimized for High Compression Ratios of Scientific Datasets](https://ieeexplore.ieee.org/document/8622520)", in IEEE International Conference on Big Data (Bigdata 2018), Seattle, WA, USA, 2018.
 
 * SZ 1.4.0-1.4.13: Dingwen Tao, Sheng Di, Franck Cappello, "[Significantly Improving Lossy Compression for Scientific Data Sets Based on Multidimensional Prediction and Error-Controlled Quantization](https://ieeexplore.ieee.org/document/7967203)", in IEEE International Parallel and Distributed Processing Symposium (IPDPS 2017), Orlando, Florida, USA, 2017.
@@ -97,6 +99,11 @@ The interfaces are listed below. More details can be found in the user guide.
 Please see doc/use-guide for details
 
 ### Python Interface
+
+**NOTE: THESE BINDINGS ARE DEPRECATED **
+
+The following information is provided for historical purposes only.
+Please consider updating to using the Python bindings for SZ provided with [LibPressio](https://github.com/codarcode/libpressio#python) instead which are more efficient and updated with new features in SZ as they are developed.
 
 The python bindings requires some additional dependencies:
 

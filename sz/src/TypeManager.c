@@ -186,7 +186,7 @@ size_t convertIntArray2ByteArray_fast_2b_inplace(unsigned char* timeStepType, si
 	for(i = 0;i<byteLength;i++)
 	{
 		int tmp = 0;
-		for(j = 0;j<4&&n<timeStepTypeLength;j++)
+		/*for(j = 0;j<4&&n<timeStepTypeLength;j++)
 		{
 			int type = timeStepType[n];
 			switch(type)
@@ -207,6 +207,12 @@ size_t convertIntArray2ByteArray_fast_2b_inplace(unsigned char* timeStepType, si
 				printf("Error: wrong timestep type...: type[%zu]=%d\n", n, type);
 				exit(0);
 			}
+			n++;
+		}*/
+		for(j = 0;j<4&&n<timeStepTypeLength;j++)
+		{
+			unsigned char type = timeStepType[n];
+			tmp = tmp | type << (6-(j<<1));
 			n++;
 		}
 		result[i] = (unsigned char)tmp;

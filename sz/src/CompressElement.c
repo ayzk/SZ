@@ -84,6 +84,13 @@ inline void listAdd_int(int64_t last3CmprsData[3], int64_t value)
 	last3CmprsData[0] = value;
 }
 
+inline void listAdd_int32(int32_t last3CmprsData[3], int32_t value)
+{
+	last3CmprsData[2] = last3CmprsData[1];
+	last3CmprsData[1] = last3CmprsData[0];
+	last3CmprsData[0] = value;
+}
+
 inline void listAdd_float_group(float *groups, int *flags, char groupNum, float oriValue, float decValue, char* curGroupID)
 {
 	if(groupNum>=0)
@@ -220,7 +227,7 @@ void updateLossyCompElement_Double(unsigned char* curBytes, unsigned char* preBy
 	lce->residualMidBits = resiBits;
 }
 
-void updateLossyCompElement_Float(unsigned char* curBytes, unsigned char* preBytes, 
+inline void updateLossyCompElement_Float(unsigned char* curBytes, unsigned char* preBytes, 
 		int reqBytesLength, int resiBitsLength,  LossyCompressionElement *lce)
 {
 	int resiIndex, intMidBytes_Length = 0;

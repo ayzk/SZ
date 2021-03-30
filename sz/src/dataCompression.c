@@ -448,7 +448,7 @@ inline void compressUInt64Value(uint64_t tgtValue, uint64_t minValue, int byteSi
 	memcpy(bytes, tmpBytes + 8 - byteSize, byteSize);
 }
 
-void compressSingleFloatValue(FloatValueCompressElement *vce, float tgtValue, float precision, float medianValue, 
+inline void compressSingleFloatValue(FloatValueCompressElement *vce, float tgtValue, float precision, float medianValue, 
 		int reqLength, int reqBytesLength, int resiBitsLength)
 {		
 	float normValue = tgtValue - medianValue;
@@ -556,7 +556,7 @@ int compIdenticalLeadingBytesCount_double(unsigned char* preBytes, unsigned char
 	return n;
 }
 
-int compIdenticalLeadingBytesCount_float(unsigned char* preBytes, unsigned char* curBytes)
+inline int compIdenticalLeadingBytesCount_float(unsigned char* preBytes, unsigned char* curBytes)
 {
 	int i, n = 0;
 	for(i=0;i<4;i++)
@@ -569,7 +569,7 @@ int compIdenticalLeadingBytesCount_float(unsigned char* preBytes, unsigned char*
 }
 
 //TODO double-check the correctness...
-void addExactData(DynamicByteArray *exactMidByteArray, DynamicIntArray *exactLeadNumArray, 
+inline void addExactData(DynamicByteArray *exactMidByteArray, DynamicIntArray *exactLeadNumArray, 
 		DynamicIntArray *resiBitArray, LossyCompressionElement *lce)
 {
 	int i;

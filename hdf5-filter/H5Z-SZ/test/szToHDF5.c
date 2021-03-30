@@ -90,7 +90,10 @@ int main(int argc, char * argv[])
 
 	//Create cd_values
 	printf("Dimension sizes: n5=%u, n4=%u, n3=%u, n2=%u, n1=%u\n", r5, r4, r3, r2, r1); 
-	SZ_metaDataToCdArray(&cd_nelmts, &cd_values, dataType, r5, r4, r3, r2, r1);
+	//SZ_metaDataToCdArray(&cd_nelmts, &cd_values, dataType, r5, r4, r3, r2, r1);
+	//
+	load_conffile_flag = 0;
+	SZ_metaDataErrToCdArray(&cd_nelmts, &cd_values, dataType, r5, r4, r3, r2, r1, ABS, 0.01, 0, 0, 0);
 	/*cd_nelmts = 5;
 	cd_values[0] = 3;
 	cd_values[1] = 0;
