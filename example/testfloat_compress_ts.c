@@ -33,83 +33,142 @@ void cost_end() {
     totalCost += elapsed;
 }
 
+void verify(float *ori_data, float *data, size_t num_elements, double *psnr, double *nrmse) {
+    size_t i = 0;
+    double Max = ori_data[0];
+    double Min = ori_data[0];
+    double diffMax = fabs(data[0] - ori_data[0]);
+    double diff_sum = 0;
+    double maxpw_relerr = fabs((data[0] - ori_data[0]) / ori_data[0]);
+    double sum1 = 0, sum2 = 0;
+    for (i = 0; i < num_elements; i++) {
+        sum1 += ori_data[i];
+        sum2 += data[i];
+    }
+    double mean1 = sum1 / num_elements;
+    double mean2 = sum2 / num_elements;
+
+    double sum3 = 0, sum4 = 0;
+    double sum = 0, prodSum = 0, relerr = 0;
+
+    double *diff = (double *) malloc(num_elements * sizeof(double));
+
+    for (i = 0; i < num_elements; i++) {
+        diff[i] = data[i] - ori_data[i];
+        diff_sum += data[i] - ori_data[i];
+        if (Max < ori_data[i]) Max = ori_data[i];
+        if (Min > ori_data[i]) Min = ori_data[i];
+        double err = fabs(data[i] - ori_data[i]);
+        if (ori_data[i] != 0) {
+            relerr = err / fabs(ori_data[i]);
+            if (maxpw_relerr < relerr)
+                maxpw_relerr = relerr;
+        }
+
+        if (diffMax < err)
+            diffMax = err;
+        prodSum += (ori_data[i] - mean1) * (data[i] - mean2);
+        sum3 += (ori_data[i] - mean1) * (ori_data[i] - mean1);
+        sum4 += (data[i] - mean2) * (data[i] - mean2);
+        sum += err * err;
+    }
+    double std1 = sqrt(sum3 / num_elements);
+    double std2 = sqrt(sum4 / num_elements);
+    double ee = prodSum / num_elements;
+    double acEff = ee / std1 / std2;
+
+    double mse = sum / num_elements;
+    double range = Max - Min;
+    *psnr = 20 * log10(range) - 10 * log10(mse);
+    *nrmse = sqrt(mse) / range;
+
+    printf("Min=%.20G, Max=%.20G, range=%.20G\n", Min, Max, range);
+    printf("Max absolute error = %.2G\n", diffMax);
+    printf("Max relative error = %.2G\n", diffMax / (Max - Min));
+    printf("Max pw relative error = %.2G\n", maxpw_relerr);
+    printf("PSNR = %f, NRMSE= %.10G\n", *psnr, *nrmse);
+    printf("acEff=%f\n", acEff);
+    free(diff);
+}
 
 int main(int argc, char *argv[]) {
     int i = 0;
     size_t r5 = 0, r4 = 0, r3 = 0, r2 = 0, r1 = 0;
-    char oriDir[640], outputDir[640], outputFilePath[600];
     char *cfgFile;
     char *varName;
     if (argc < 4) {
-        printf("Test case: testfloat_compress_ts [config_file] [varName] [srcDir] [timestep] [dimensions...]\n");
+        printf("Test case: testfloat_compress_ts [config_file] [file] [timesteps] [dimension]\n");
         printf("Example: testfloat_compress_ts sz.config QCLOUDf /home/sdi/Data/Hurricane-ISA/consecutive-steps 48 500 500 100\n");
         exit(0);
     }
 
     cfgFile = argv[1];
     varName = argv[2];
-    sprintf(oriDir, "%s", argv[3]);
     size_t timesteps = 0;
-    if (argc >= 5) {
-        timesteps = atoi(argv[4]);
+    if (argc >= 4) {
+        timesteps = atoi(argv[3]);
     }
-    if (argc >= 6)
-        r1 = atoi(argv[5]); //8
-
-    if (argc >= 7)
-        r2 = atoi(argv[6]); //8
-    if (argc >= 8)
-        r3 = atoi(argv[7]); //128
-    if (argc >= 9)
-        r4 = atoi(argv[8]);
-    if (argc >= 10)
-        r5 = atoi(argv[9]);
+    if (argc >= 5) {
+        r1 = atoi(argv[4]); //8
+    }
 
     printf("cfgFile=%s\n", cfgFile);
     int status = SZ_Init(cfgFile);
     if (status == SZ_NSCS)
         exit(0);
-    sprintf(outputDir, "%s", oriDir);
 
-    char varName2[100];
-    sprintf(varName2, "%s2", varName);
-    char oriFilePath[600];
-    size_t nbEle;
-    size_t dataLength = computeDataLength(r5, r4, r3, r2, r1);
-    float *data = (float *) malloc(sizeof(float) * dataLength);
-//    float *data2 = (float *) malloc(sizeof(float) * dataLength);
+    float *data = (float *) malloc(sizeof(float) * r1);
     SZ_registerVar(1, varName, SZ_FLOAT, data, confparams_cpr->errorBoundMode, confparams_cpr->absErrBound,
                    confparams_cpr->relBoundRatio, confparams_cpr->pw_relBoundRatio, r5, r4, r3, r2, r1);
-//    SZ_registerVar(2, varName2, SZ_FLOAT, data2, confparams_cpr->errorBoundMode, confparams_cpr->absErrBound,
-//                   confparams_cpr->relBoundRatio, confparams_cpr->pw_relBoundRatio, r5, r4, r3, r2, r1);
 
     if (status != SZ_SCES) {
-        printf("Error: data file %s cannot be read!\n", oriFilePath);
+        printf("Error: data file cannot be read!\n");
         exit(0);
     }
 
     size_t outSize, totalOutSize = 0;
     unsigned char *bytes = NULL;
+    size_t nbEle;
+    float *data_all = readFloatData(varName, &nbEle, &status);
+    float *dec_all = (float *) malloc(sizeof(float) * r1 * timesteps);
+    double total_compress_time = 0;
+    double total_decompress_time = 0;
     for (i = 0; i < timesteps; i++) {
         printf("simulation time step %d\n", i);
-        sprintf(oriFilePath, "%s/%s.%04d", oriDir, varName, i);
-        float *data_ = readFloatData(oriFilePath, &nbEle, &status);
-        memcpy(data, data_, nbEle * sizeof(float));
-//        memcpy(data2, data_, nbEle * sizeof(float));
+
+        memcpy(data, &data_all[i * r1], r1 * sizeof(float));
+
         cost_start();
         SZ_compress_ts(SZ_PERIO_TEMPORAL_COMPRESSION, &bytes, &outSize);
         cost_end();
-        printf("Compression Ratio = %.3f\n", r1 * sizeof(float) * 1.0 / outSize);
-        printf("Timecost = %f\n", totalCost);
-        sprintf(outputFilePath, "%s.%04d.sz2", varName, i);
-//        printf("writing compressed data to %s\n", outputFilePath);
-//        writeByteData(bytes, outSize, outputFilePath, &status);
+        printf("Compress_time = %f\n", totalCost);
+        total_compress_time += totalCost;
         totalOutSize += outSize;
+
+        cost_start();
+        SZ_decompress_ts(bytes, outSize);
+        cost_end();
+        printf("Decompress_time = %f\n", totalCost);
+        total_decompress_time += totalCost;
+        memcpy(&dec_all[i * r1], data, r1 * sizeof(float));
+
+        printf("Compression Ratio = %.3f\n", r1 * sizeof(float) * 1.0 / outSize);
+
         free(bytes);
-        free(data_);
+//        free(data_);
     }
-    printf("Total Compression Ratio = %.3f\n", timesteps * r1 * sizeof(float) * 1.0 / totalOutSize);
+    char varNameOutput[600];
+    sprintf(varNameOutput, "%s.sztime.out", varName);
+    writeByteData((unsigned char *) dec_all, r1 * timesteps * sizeof(float), varNameOutput, &status);
+
+    double psnr, nrmse;
+    verify(data_all, dec_all, r1, &psnr, &nrmse);
+    printf("Total Compression Ratio = %.3f, compress_time =%.3f, decompress_time= %.3f\n",
+           timesteps * r1 * sizeof(float) * 1.0 / totalOutSize,
+           total_compress_time, total_decompress_time);
+
     free(data);
+    free(data_all);
     SZ_Finalize();
 
     return 0;
