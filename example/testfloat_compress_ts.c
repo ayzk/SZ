@@ -12,6 +12,10 @@
 #include <stdlib.h>
 #include "sz.h"
 #include "rw.h"
+#include <libgen.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <unistd.h>
 
 struct timeval startTime;
 struct timeval endTime;  /* Start and end times */
@@ -33,11 +37,11 @@ void cost_end() {
     totalCost += elapsed;
 }
 
-void verify(float *ori_data, float *data, size_t num_elements, double *psnr, double *nrmse) {
+void verify(float *ori_data, float *data, size_t num_elements, double *psnr, double *nrmse, double *diffMax) {
     size_t i = 0;
     double Max = ori_data[0];
     double Min = ori_data[0];
-    double diffMax = fabs(data[0] - ori_data[0]);
+    *diffMax = fabs(data[0] - ori_data[0]);
     double diff_sum = 0;
     double maxpw_relerr = fabs((data[0] - ori_data[0]) / ori_data[0]);
     double sum1 = 0, sum2 = 0;
@@ -65,29 +69,19 @@ void verify(float *ori_data, float *data, size_t num_elements, double *psnr, dou
                 maxpw_relerr = relerr;
         }
 
-        if (diffMax < err)
-            diffMax = err;
+        if (*diffMax < err)
+            *diffMax = err;
         prodSum += (ori_data[i] - mean1) * (data[i] - mean2);
         sum3 += (ori_data[i] - mean1) * (ori_data[i] - mean1);
         sum4 += (data[i] - mean2) * (data[i] - mean2);
         sum += err * err;
     }
-    double std1 = sqrt(sum3 / num_elements);
-    double std2 = sqrt(sum4 / num_elements);
-    double ee = prodSum / num_elements;
-    double acEff = ee / std1 / std2;
 
     double mse = sum / num_elements;
     double range = Max - Min;
     *psnr = 20 * log10(range) - 10 * log10(mse);
     *nrmse = sqrt(mse) / range;
 
-    printf("Min=%.20G, Max=%.20G, range=%.20G\n", Min, Max, range);
-    printf("Max absolute error = %.2G\n", diffMax);
-    printf("Max relative error = %.2G\n", diffMax / (Max - Min));
-    printf("Max pw relative error = %.2G\n", maxpw_relerr);
-    printf("PSNR = %f, NRMSE= %.10G\n", *psnr, *nrmse);
-    printf("acEff=%f\n", acEff);
     free(diff);
 }
 
@@ -157,13 +151,25 @@ int main(int argc, char *argv[]) {
 //        free(data_);
     }
     char varNameOutput[600];
-    sprintf(varNameOutput, "%s.sztime.out", varName);
+    char *folder = dirname(strdup(varName));
+    char *filename = basename(strdup(varName));
+    sprintf(varNameOutput, "%s/sztime", folder);
+    struct stat st = {0};
+    if (stat(varNameOutput, &st) == -1) {
+        mkdir(varNameOutput, 0700);
+    }
+    sprintf(varNameOutput, "%s/%s.b%d.%.1e.out", varNameOutput, filename, confparams_cpr->snapshotCmprStep,
+            confparams_cpr->relBoundRatio);
+    printf("write decompressed file to %s\n", varNameOutput);
     writeByteData((unsigned char *) dec_all, r1 * timesteps * sizeof(float), varNameOutput, &status);
 
-    double psnr, nrmse;
-    verify(data_all, dec_all, r1, &psnr, &nrmse);
-    printf("Total Compression Ratio = %.3f, compress_time =%.3f, decompress_time= %.3f\n",
+    double psnr, nrmse, max_diff;
+    verify(data_all, dec_all, r1, &psnr, &nrmse, &max_diff);
+    printf("file=%s, block=%d, compression_ratio=%.3f, reb=%.1e, eb=%.6f, psnr=%.3f, nsmse=%e, compress_time=%.3f, decompress_time=%.3f\n",
+           varName, confparams_cpr->snapshotCmprStep,
            timesteps * r1 * sizeof(float) * 1.0 / totalOutSize,
+           confparams_cpr->relBoundRatio,
+           max_diff, psnr, nrmse,
            total_compress_time, total_decompress_time);
 
     free(data);
