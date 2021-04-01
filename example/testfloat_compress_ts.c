@@ -165,7 +165,7 @@ int main(int argc, char *argv[]) {
 
     double psnr, nrmse, max_diff;
     verify(data_all, dec_all, r1, &psnr, &nrmse, &max_diff);
-    printf("file=%s, block=%d, compression_ratio=%.3f, reb=%.1e, eb=%.6f, psnr=%.3f, nsmse=%e, compress_time=%.3f, decompress_time=%.3f\n",
+    printf("method=sztime, file=%s, block=%d, compression_ratio=%.3f, reb=%.1e, eb=%.6f, psnr=%.3f, nsmse=%e, compress_time=%.3f, decompress_time=%.3f\n",
            varName, confparams_cpr->snapshotCmprStep,
            timesteps * r1 * sizeof(float) * 1.0 / totalOutSize,
            confparams_cpr->relBoundRatio,
