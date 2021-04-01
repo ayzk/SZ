@@ -93,38 +93,35 @@ void verify(float *ori_data, float *data, size_t num_elements, double *psnr, dou
 
 int main(int argc, char *argv[]) {
     int i = 0;
-    size_t r5 = 0, r4 = 0, r3 = 0, r2 = 0, r1 = 0;
-    char *cfgFile;
+    size_t r1 = 0;
     char *varName;
-    if (argc < 4) {
-        printf("Test case: testfloat_compress_ts [config_file] [file] [timesteps] [dimension]\n");
-        printf("Example: testfloat_compress_ts sz.config QCLOUDf /home/sdi/Data/Hurricane-ISA/consecutive-steps 48 500 500 100\n");
+    if (argc < 6) {
+        printf("Test case: testfloat_compress_ts [file] [timesteps] [dimension] [reb] [timestep_interval]\n");
+//        printf("Example: testfloat_compress_ts sz.config QCLOUDf /home/sdi/Data/Hurricane-ISA/consecutive-steps 48 500 500 100\n");
         exit(0);
     }
 
-    cfgFile = argv[1];
-    varName = argv[2];
-    size_t timesteps = 0;
-    if (argc >= 4) {
-        timesteps = atoi(argv[3]);
-    }
-    if (argc >= 5) {
-        r1 = atoi(argv[4]); //8
-    }
-
-    printf("cfgFile=%s\n", cfgFile);
+    char cfgFile[600];
+    sprintf(cfgFile, "%s/code/sz2/example/sz.config", getenv("HOME"));
+    printf("read config file from %s\n", cfgFile);
     int status = SZ_Init(cfgFile);
     if (status == SZ_NSCS)
         exit(0);
 
+    confparams_cpr->errorBoundMode = REL;
+
+    varName = argv[1];
+    size_t timesteps = 0;
+    int argp = 2;
+    timesteps = atoi(argv[argp++]);
+    r1 = atoi(argv[argp++]);
+    confparams_cpr->relBoundRatio = atof(argv[argp++]);
+    confparams_cpr->snapshotCmprStep = atoi(argv[argp++]);
+
+
     float *data = (float *) malloc(sizeof(float) * r1);
     SZ_registerVar(1, varName, SZ_FLOAT, data, confparams_cpr->errorBoundMode, confparams_cpr->absErrBound,
-                   confparams_cpr->relBoundRatio, confparams_cpr->pw_relBoundRatio, r5, r4, r3, r2, r1);
-
-    if (status != SZ_SCES) {
-        printf("Error: data file cannot be read!\n");
-        exit(0);
-    }
+                   confparams_cpr->relBoundRatio, confparams_cpr->pw_relBoundRatio, 0, 0, 0, 0, r1);
 
     size_t outSize, totalOutSize = 0;
     unsigned char *bytes = NULL;
@@ -141,6 +138,7 @@ int main(int argc, char *argv[]) {
         cost_start();
         SZ_compress_ts(SZ_PERIO_TEMPORAL_COMPRESSION, &bytes, &outSize);
         cost_end();
+        int currentStep = sz_tsc->currentStep;
         printf("Compress_time = %f\n", totalCost);
         total_compress_time += totalCost;
         totalOutSize += outSize;
@@ -148,6 +146,7 @@ int main(int argc, char *argv[]) {
         cost_start();
         SZ_decompress_ts(bytes, outSize);
         cost_end();
+        sz_tsc->currentStep = currentStep;
         printf("Decompress_time = %f\n", totalCost);
         total_decompress_time += totalCost;
         memcpy(&dec_all[i * r1], data, r1 * sizeof(float));
