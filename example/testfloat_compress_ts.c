@@ -161,7 +161,7 @@ int main(int argc, char *argv[]) {
     sprintf(varNameOutput, "%s/%s.b%d.%.1e.out", varNameOutput, filename, confparams_cpr->snapshotCmprStep,
             confparams_cpr->relBoundRatio);
     printf("write decompressed file to %s\n", varNameOutput);
-    writeByteData((unsigned char *) dec_all, r1 * timesteps * sizeof(float), varNameOutput, &status);
+//    writeByteData((unsigned char *) dec_all, r1 * timesteps * sizeof(float), varNameOutput, &status);
 
     double psnr, nrmse, max_diff;
     verify(data_all, dec_all, r1, &psnr, &nrmse, &max_diff);
