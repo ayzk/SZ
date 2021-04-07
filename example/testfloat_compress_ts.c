@@ -13,8 +13,6 @@
 #include "sz.h"
 #include "rw.h"
 #include <libgen.h>
-#include <sys/types.h>
-#include <sys/stat.h>
 #include <unistd.h>
 
 struct timeval startTime;
@@ -151,17 +149,11 @@ int main(int argc, char *argv[]) {
 //        free(data_);
     }
     char varNameOutput[600];
-    char *folder = dirname(strdup(varName));
     char *filename = basename(strdup(varName));
-    sprintf(varNameOutput, "%s/sztime", folder);
-    struct stat st = {0};
-    if (stat(varNameOutput, &st) == -1) {
-        mkdir(varNameOutput, 0700);
-    }
-    sprintf(varNameOutput, "%s/%s.b%d.%.1e.out", varNameOutput, filename, confparams_cpr->snapshotCmprStep,
+    sprintf(varNameOutput, "%s.b%d.%.1e.sztime.out", filename, confparams_cpr->snapshotCmprStep,
             confparams_cpr->relBoundRatio);
     printf("write decompressed file to %s\n", varNameOutput);
-//    writeByteData((unsigned char *) dec_all, r1 * timesteps * sizeof(float), varNameOutput, &status);
+    writeByteData((unsigned char *) dec_all, r1 * timesteps * sizeof(float), varNameOutput, &status);
 
     double psnr, nrmse, max_diff;
     verify(data_all, dec_all, r1, &psnr, &nrmse, &max_diff);
