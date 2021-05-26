@@ -100,52 +100,78 @@ int main(int argc, char *argv[]) {
     if (status == SZ_NSCS)
         exit(0);
 
-    confparams_cpr->errorBoundMode = REL;
 
     varName = argv[1];
     size_t timesteps = 0;
     int argp = 2;
     timesteps = atoi(argv[argp++]);
     r1 = atoi(argv[argp++]);
-    confparams_cpr->relBoundRatio = atof(argv[argp++]);
-    confparams_cpr->snapshotCmprStep = atoi(argv[argp++]);
-
+    double reb = atof(argv[argp++]);
+    int buffersize = atoi(argv[argp++]);
 
     float *data = (float *) malloc(sizeof(float) * r1);
+    confparams_cpr->errorBoundMode = REL;
+    confparams_cpr->relBoundRatio = reb;
+    confparams_cpr->snapshotCmprStep = buffersize;
     SZ_registerVar(1, varName, SZ_FLOAT, data, confparams_cpr->errorBoundMode, confparams_cpr->absErrBound,
                    confparams_cpr->relBoundRatio, confparams_cpr->pw_relBoundRatio, 0, 0, 0, 0, r1);
 
-    size_t outSize, totalOutSize = 0;
-    unsigned char *bytes = NULL;
+    size_t totalOutSize = 0;
+    unsigned char **bytes = (unsigned char **) malloc(sizeof(unsigned char *) * timesteps);
+    size_t *outSize = (size_t *) malloc(sizeof(size_t) * timesteps);
+
     size_t nbEle;
     float *data_all = readFloatData(varName, &nbEle, &status);
     float *dec_all = (float *) malloc(sizeof(float) * r1 * timesteps);
     double total_compress_time = 0;
     double total_decompress_time = 0;
+    double psnr, nrmse, max_diff;
+
     for (i = 0; i < timesteps; i++) {
-        printf("simulation time step %d\n", i);
+//        printf("simulation time step %d\n", i);
 
         memcpy(data, &data_all[i * r1], r1 * sizeof(float));
 
         cost_start();
-        SZ_compress_ts(SZ_PERIO_TEMPORAL_COMPRESSION, &bytes, &outSize);
+        SZ_compress_ts(SZ_PERIO_TEMPORAL_COMPRESSION, &bytes[i], &outSize[i]);
         cost_end();
         int currentStep = sz_tsc->currentStep;
-        printf("Compress_time = %f\n", totalCost);
+//        printf("Compress_time = %f\n", totalCost);
+//        printf("Compression Ratio = %.3f\n", r1 * sizeof(float) * 1.0 / outSize[i]);
         total_compress_time += totalCost;
-        totalOutSize += outSize;
+        totalOutSize += outSize[i];
+    }
+    SZ_Finalize();
+    sz_varset = NULL;
+
+    status = SZ_Init(cfgFile);
+    if (status == SZ_NSCS)
+        exit(0);
+    confparams_cpr->errorBoundMode = REL;
+    confparams_cpr->relBoundRatio = reb;
+    confparams_cpr->snapshotCmprStep = buffersize;
+    SZ_registerVar(1, varName, SZ_FLOAT, data, confparams_cpr->errorBoundMode, confparams_cpr->absErrBound,
+                   confparams_cpr->relBoundRatio, confparams_cpr->pw_relBoundRatio, 0, 0, 0, 0, r1);
+    printf("Begin Decompression\n");
+//    data = (float *) malloc(sizeof(float) * r1);
+    for (i = 0; i < timesteps; i++) {
+//        printf("simulation time step %d\n", i);
 
         cost_start();
-        SZ_decompress_ts(bytes, outSize);
+        SZ_decompress_ts(bytes[i], outSize[i]);
         cost_end();
-        sz_tsc->currentStep = currentStep;
-        printf("Decompress_time = %f\n", totalCost);
+//        int currentStep = sz_tsc->currentStep;
+//        sz_tsc->currentStep = currentStep;
+//        printf("Decompress_time = %f\n", totalCost);
+        fflush(stdout);
         total_decompress_time += totalCost;
         memcpy(&dec_all[i * r1], data, r1 * sizeof(float));
 
-        printf("Compression Ratio = %.3f\n", r1 * sizeof(float) * 1.0 / outSize);
+//        verify(&data_all[i * r1], data, r1, &psnr, &nrmse, &max_diff);
 
-        free(bytes);
+//        printf("diff=%.6f, psnr=%.3f, nsmse=%e\n\n", max_diff, psnr, nrmse);
+
+        free(bytes[i]);
 //        free(data_);
     }
     char varNameOutput[600];
@@ -155,8 +181,7 @@ int main(int argc, char *argv[]) {
     printf("write decompressed file to %s\n", varNameOutput);
     writeByteData((unsigned char *) dec_all, r1 * timesteps * sizeof(float), varNameOutput, &status);
 
-    double psnr, nrmse, max_diff;
-    verify(data_all, dec_all, r1, &psnr, &nrmse, &max_diff);
+    verify(data_all, dec_all, r1 * timesteps, &psnr, &nrmse, &max_diff);
     printf("method=sztime, file=%s, block=%d, compression_ratio=%.3f, reb=%.1e, eb=%.6f, psnr=%.3f, nsmse=%e, compress_time=%.3f, decompress_time=%.3f\n",
            varName, confparams_cpr->snapshotCmprStep,
            timesteps * r1 * sizeof(float) * 1.0 / totalOutSize,
@@ -166,6 +191,8 @@ int main(int argc, char *argv[]) {
 
     free(data);
     free(data_all);
+    free(bytes);
+    free(outSize);
     SZ_Finalize();
 
     return 0;
