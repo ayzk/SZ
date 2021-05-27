@@ -595,10 +595,11 @@ size_t dataLength, double realPrecision, size_t *outSize, float valueRangeSize, 
 		tdps = SZ_compress_float_1D_MDQ(oriData, dataLength, realPrecision, valueRangeSize, medianValue_f);	
 
 	convertTDPStoFlatBytes_float(tdps, newByteData, outSize);
-	
+
+#ifndef HAVE_TIMECMPR
 	if(*outSize>3 + MetaDataByteLength + exe_params->SZ_SIZE_TYPE + 1 + sizeof(float)*dataLength)
 		SZ_compress_args_float_StoreOriData(oriData, dataLength, newByteData, outSize);
-	
+#endif
 	free_TightDataPointStorageF(tdps);
 	return compressionType;
 }
