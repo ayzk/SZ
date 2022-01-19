@@ -111,6 +111,8 @@ int main(int argc, char *argv[]) {
 
     float *data = (float *) malloc(sizeof(float) * r1);
     confparams_cpr->errorBoundMode = REL;
+//    confparams_cpr->errorBoundMode = ABS;
+//    confparams_cpr->absErrBound = 0.01141120;
     confparams_cpr->relBoundRatio = reb;
     confparams_cpr->snapshotCmprStep = buffersize;
     SZ_registerVar(1, varName, SZ_FLOAT, data, confparams_cpr->errorBoundMode, confparams_cpr->absErrBound,
@@ -126,10 +128,25 @@ int main(int argc, char *argv[]) {
     double total_compress_time = 0;
     double total_decompress_time = 0;
     double psnr, nrmse, max_diff;
+    float max, min;
 
     for (i = 0; i < timesteps; i++) {
 //        printf("simulation time step %d\n", i);
+        if (i % buffersize == 0) {
+            max = data_all[0];
+            min = data_all[0];
+        }
+        for (size_t x = i * r1; x < (i + 1) * r1; x++) {
+            if (data_all[x] > max) {
+                max = data_all[x];
+            }
+            if (data_all[x] < min) {
+                min = data_all[x];
+            }
+        }
 
+        sz_varset->header->next->absErrBound = (max - min) * reb;
+        sz_varset->header->next->errBoundMode = ABS;
         memcpy(data, &data_all[i * r1], r1 * sizeof(float));
 
         cost_start();
@@ -137,6 +154,7 @@ int main(int argc, char *argv[]) {
         cost_end();
         int currentStep = sz_tsc->currentStep;
 //        printf("Compress_time = %f\n", totalCost);
+        printf("Compress_size = %lu\n", outSize[i]);
 //        printf("Compression Ratio = %.3f\n", r1 * sizeof(float) * 1.0 / outSize[i]);
         total_compress_time += totalCost;
         totalOutSize += outSize[i];

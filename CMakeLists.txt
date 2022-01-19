@@ -105,7 +105,7 @@ if(BUILD_HDF5_FILTER)
 endif()
 
 option(BUILD_PASTRI "build the pastri code" OFF)
-option(BUILD_TIMECMPR "build the time based compression code" OFF)
+option(BUILD_TIMECMPR "build the time based compression code" ON)
 option(BUILD_RANDOMACCESS "build the random access code" OFF)
 option(BUILD_DOCKER_CONTAINERS "build docker containers for testing" OFF)
 option(BUILD_FORTRAN "build the fortran interface" OFF)

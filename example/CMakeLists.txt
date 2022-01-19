@@ -16,6 +16,12 @@ target_link_libraries (testdouble_compress SZ)
 add_executable (testdouble_decompress testdouble_decompress.c)
 target_link_libraries (testdouble_decompress SZ)
 
+add_executable (testfloat_compress_ts testfloat_compress_ts.c)
+target_link_libraries (testfloat_compress_ts SZ)
+
+add_executable (testfloat_decompress_ts testfloat_decompress_ts.c)
+target_link_libraries (testfloat_decompress_ts SZ)
+
 add_executable (sz sz.c)
 target_link_libraries (sz SZ)
 
