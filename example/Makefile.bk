@@ -2,7 +2,7 @@
 ##   Makefile to test SZ library.
 
 ##   PLEASE SET THIS VARIABLE BEFORE COMPILING
-SZPATH		= /home/sdi/Install/sz-2.0-install
+SZPATH		= /home/sdi/Install/sz-2.1.12-install
 GSLPATH = /usr/local/Cellar/gsl/2.4
 ##   COMPILERS
 CC		= gcc
@@ -21,7 +21,7 @@ NETCDFFLAG = -I$(NETCDFPATH)/include -lnetcdf
 
 
 ##   TARGETS
-all: 		sz testint_compress testint_decompress testfloat_compress testfloat_decompress testdouble_compress testdouble_decompress
+all: 		sz testint_compress testint_decompress testfloat_compress testfloat_decompress testdouble_compress testdouble_decompress test_threadsafe test_threadsafe2
 #all: 		testdouble_compress_f testdouble_decompress_f testdouble_batch_compress_f
 
 #testfloat_compress_ts:	testfloat_compress_ts.c
@@ -54,6 +54,12 @@ testdouble_decompress_f:      testdouble_decompress_f.f90
 sz:		sz.c
 	$(CC)  -g -O3 -o sz	sz.c $(SZFLAG)
 
+test_threadsafe:        test_threadsafe.c
+	$(CC)  -g -O3 -o test_threadsafe test_threadsafe.c $(SZFLAG) -fopenmp
+
+test_threadsafe2:	test_threadsafe2.c
+	$(CC)  -g -O3 -o test_threadsafe2 test_threadsafe2.c $(SZFLAG) -fopenmp
+
 clean:
-	rm -f test*_compress test*_decompress test*_compress_f test*_decompress_f sz
+	rm -f test*_compress test*_decompress test*_compress_f test*_decompress_f sz test_threadsafe test_threadsafe2
 

@@ -37,7 +37,12 @@ find_package(SWIG)
 if(SWIG_FOUND AND BUILD_SHARED_LIBS)
   include(UseSWIG)
 
+
   find_package(Python COMPONENTS Interpreter Development NumPy)
+  if(NOT SZ_PYTHON_SITELIB)
+    set(SZ_PYTHON_SITELIB ${Python_SITELIB} CACHE PATH "path to install python libraries to")
+  endif()
+
   set_property(SOURCE pysz.i PROPERTY CPLUSPLUS ON)
   set_property(SOURCE pysz.i PROPERTY USE_TARGET_INCLUDE_DIRECTORIES ON)
 
@@ -51,7 +56,7 @@ if(SWIG_FOUND AND BUILD_SHARED_LIBS)
   target_include_directories(pysz PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
 
   get_property(swig_generated_module TARGET pysz PROPERTY SWIG_SUPPORT_FILES)
-  install(TARGETS pysz DESTINATION ${Python_SITELIB})
-  install(FILES ${swig_generated_module} DESTINATION ${Python_SITELIB})
+  install(TARGETS pysz DESTINATION ${SZ_PYTHON_SITELIB})
+  install(FILES ${swig_generated_module} DESTINATION ${SZ_PYTHON_SITELIB})
 
 endif()

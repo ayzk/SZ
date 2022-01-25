@@ -336,7 +336,6 @@ int main(int argc, char* argv[])
 		if(normError != NULL)
 			confparams_cpr->normErr = atof(normError);
 
-		size_t outSize;	
 		if(dataType == 0) //single precision
 		{
 			if(tucker)
@@ -354,20 +353,19 @@ int main(int argc, char* argv[])
 			}
 			cost_start();	
 			if(confparams_cpr->sol_ID==SZ)
-				bytes = SZ_compress(SZ_FLOAT, data, &outSize, r5, r4, r3, r2, r1);
+				bytes = SZ_compress(SZ_FLOAT, data, &byteLength, r5, r4, r3, r2, r1);
 			else if(confparams_cpr->sol_ID==SZ_Transpose)
 			{
 				int status = 0;
-				bytes = SZ_compress_customize("SZ_Transpose", NULL, SZ_FLOAT, data, r5, r4, r3, r2, r1, &outSize, &status);
+				bytes = SZ_compress_customize("SZ_Transpose", NULL, SZ_FLOAT, data, r5, r4, r3, r2, r1, &byteLength, &status);
 			}	
 			cost_end();
 			if(cmpPath == NULL)
 				sprintf(outputFilePath, "%s.sz", inPath);
 			else
 				strcpy(outputFilePath, cmpPath);
-			writeByteData(bytes, outSize, outputFilePath, &status);
-
-			size_t data_size = sizeof(float);
+			writeByteData(bytes, byteLength, outputFilePath, &status);
+            size_t data_size = sizeof(float);
             if (r1 != 0) {
                 data_size *= r1;
             }
@@ -384,8 +382,9 @@ int main(int argc, char* argv[])
                 data_size *= r5;
             }
 
-            printf("compression ratio = %.2f \n", data_size * 1.0 / outSize);
-			free(data);
+            printf("compression ratio = %.2f \n", data_size * 1.0 / byteLength);
+
+            free(data);
 			if(status != SZ_SCES)
 			{
 				printf("Error: data file %s cannot be written!\n", outputFilePath);
@@ -454,9 +453,7 @@ int main(int argc, char* argv[])
 			}
 			else
 			{
-				double *data = readDoubleData(inPath, &nbEle, &status);
-
-
+				double *data = readDoubleData(inPath, &nbEle, &status);	
 				if(status!=SZ_SCES)
 				{
 					printf("Error: cannot read the input file: %s\n", inPath);
@@ -464,18 +461,18 @@ int main(int argc, char* argv[])
 				}
 				cost_start();
 				if(confparams_cpr->sol_ID==SZ)
-					bytes = SZ_compress(SZ_DOUBLE, data, &outSize, r5, r4, r3, r2, r1);
+					bytes = SZ_compress(SZ_DOUBLE, data, &byteLength, r5, r4, r3, r2, r1);
 				else if(confparams_cpr->sol_ID==SZ_Transpose)
 				{
 					int status = 0;
-					bytes = SZ_compress_customize("SZ_Transpose", NULL, SZ_DOUBLE, data, r5, r4, r3, r2, r1, &outSize, &status);
+					bytes = SZ_compress_customize("SZ_Transpose", NULL, SZ_DOUBLE, data, r5, r4, r3, r2, r1, &byteLength, &status);
 				}				
 				cost_end();
 				if(cmpPath == NULL)
 					sprintf(outputFilePath, "%s.sz", inPath);
 				else
 					strcpy(outputFilePath, cmpPath);
-				writeByteData(bytes, outSize, outputFilePath, &status);		
+				writeByteData(bytes, byteLength, outputFilePath, &status);
 				free(data);
                 size_t data_size = sizeof(double);
                 if (r1 != 0) {
@@ -494,7 +491,7 @@ int main(int argc, char* argv[])
                     data_size *= r5;
                 }
 
-                printf("compression ratio = %.2f \n", data_size * 1.0 / outSize);
+                printf("compression ratio = %.2f \n", data_size * 1.0 / byteLength);
 				if(status != SZ_SCES)
 				{
 					printf("Error: data file %s cannot be written!\n", outputFilePath);
@@ -704,7 +701,7 @@ int main(int argc, char* argv[])
 				else if(r3==0)
 					sprintf(dimStr2, "Ending subscripts = %zu %zu", r2-1, r1-1);
 				else if(r4==0)
-					sprintf(dimStr2, "Endi outDir[640],ng subscripts = %zu %zu %zu", r3-1, r2-1, r1-1);
+					sprintf(dimStr2, "Ending subscripts = %zu %zu %zu", r3-1, r2-1, r1-1);
 				else if(r5==0)
 					sprintf(dimStr2, "Ending subscripts = %zu %zu %zu %zu", r4-1, r3-1, r2-1, r1-1);
 				else

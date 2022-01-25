@@ -26,6 +26,10 @@ void writeZstdCompressionRatio(float zstdCompressionRatio)
 	sz_stat.zstdCompressionRatio = zstdCompressionRatio;
 }	
 
+void writeConstantFlag(int flag)
+{
+	sz_stat.constant_flag = flag;
+}
 
 void writeUnpredictDataCounts(size_t unpredictCount, size_t totalNumElements)
 {
@@ -36,6 +40,10 @@ void writeUnpredictDataCounts(size_t unpredictCount, size_t totalNumElements)
 void printSZStats()
 {
 	printf("===============stats about sz================\n");
+	if(sz_stat.constant_flag)
+		printf("Constant data? :           YES\n");
+	else
+		printf("Constant data? :           NO\n");
 	if(sz_stat.use_mean)
 		printf("use_mean:                  YES\n");
 	else

@@ -19,6 +19,7 @@ extern "C" {
 
 typedef struct sz_stats
 {
+	int constant_flag;
 	int use_mean;
 	
 	size_t blockSize;
@@ -48,6 +49,7 @@ extern sz_stats sz_stat;
 void writeBlockInfo(int use_mean, size_t blockSize, size_t regressionBlocks, size_t totalBlocks);
 void writeHuffmanInfo(size_t huffmanTreeSize, size_t huffmanCodingSize, size_t totalDataSize, int huffmanNocdeCount);
 void writeZstdCompressionRatio(float zstdCompressionRatio);
+void writeConstantFlag(int flag);
 void writeUnpredictDataCounts(size_t unpredictCount, size_t totalNumElements);
 void printSZStats();
 

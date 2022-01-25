@@ -356,6 +356,7 @@ void convertTDPStoFlatBytes_int(TightDataPointStorageI *tdps, unsigned char** by
 	{
 		size_t totalByteLength = 3 + 1 + MetaDataByteLength + exe_params->SZ_SIZE_TYPE + tdps->exactDataBytes_size;
 		*bytes = (unsigned char *)malloc(sizeof(unsigned char)*totalByteLength);
+		memset(*bytes, 0, sizeof(unsigned char)*totalByteLength);
 
 		for (i = 0; i < 3; i++)//3
 			(*bytes)[k++] = versionNumber[i];
@@ -385,6 +386,7 @@ void convertTDPStoFlatBytes_int(TightDataPointStorageI *tdps, unsigned char** by
 				+ tdps->typeArray_size + tdps->exactDataBytes_size;
 
 		*bytes = (unsigned char *)malloc(sizeof(unsigned char)*totalByteLength);
+		memset(*bytes, 0, sizeof(unsigned char)*totalByteLength);
 
 		convertTDPStoBytes_int(tdps, *bytes, sameByte);
 		

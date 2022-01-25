@@ -41,7 +41,7 @@ int main(int argc, char * argv[])
 {
     size_t r5=0,r4=0,r3=0,r2=0,r1=0;
     size_t nbEle, totalNbEle;
-    char zipFilePath[640], outputFilePath[640];
+    char zipFilePath[640], outputFilePath[650];
     if(argc < 2)
     {
 		printf("Test case: testfloat_decompress [srcFilePath] [dimension sizes...]\n");

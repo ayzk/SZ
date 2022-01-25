@@ -35,7 +35,7 @@ size_t decompressDataSeries_float_2D_RA_block(float * data, float mean, size_t d
 
 int SZ_decompress_args_float(float** newData, size_t r5, size_t r4, size_t r3, size_t r2, size_t r1, unsigned char* cmpBytes, size_t cmpSize, int compressionType, float* hist_data);
 
-size_t decompressDataSeries_float_3D_RA_block(float * data, float mean, size_t dim_0, size_t dim_1, size_t dim_2, size_t block_dim_0, size_t block_dim_1, size_t block_dim_2, double realPrecision, int * type, float * unpredictable_data);
+size_t decompressDataSeries_float_3D_RA_block(float * data, float mean, size_t dim_0, size_t dim_1, size_t dim_2, size_t block_dim_0, size_t block_dim_1, size_t block_dim_2, float realPrecision, int * type, float * unpredictable_data);
 
 void decompressDataSeries_float_1D_decompression_given_areas_with_blocked_regression(float** data, size_t r1, size_t s1, size_t e1, unsigned char* comp_data);
 

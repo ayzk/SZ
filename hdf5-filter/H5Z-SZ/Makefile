@@ -9,8 +9,8 @@
 ##   PLEASE SET THESE VARIABLES BEFORE COMPILING
 ##=======================================================================
 
-SZPATH		= /home/sdi/Install/sz-2.1-install
-HDF5PATH	= /home/sdi/Install/hdf5-1.10.1-install
+SZPATH		= /home/sdi/Install/sz-2.1.12-install
+HDF5PATH	= /home/sdi/Install/hdf5-1.10.3-install
 
 ##=======================================================================
 ##   DIRECTORY TREE
@@ -32,7 +32,7 @@ MPICC 		= mpicc
 ##   FLAGS
 ##=======================================================================
 
-SZFLAGS         = -I$(SZPATH)/include -L$(SZPATH)/lib
+SZFLAGS         = -I$(SZPATH)/include -L$(SZPATH)/lib -Wl,-rpath,$(SZPATH)/lib
 
 HDF5FLAGS	= -I$(HDF5PATH)/include #$(HDF5PATH)/lib/libhdf5.a
 

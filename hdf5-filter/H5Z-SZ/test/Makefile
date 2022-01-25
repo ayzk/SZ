@@ -5,8 +5,8 @@
 ##   PLEASE SET THESE VARIABLES BEFORE COMPILING
 ##=======================================================================
 
-SZPATH		= /home/sdi/Install/sz-2.1-install
-HDF5PATH	= /home/sdi/Install/hdf5-1.10.1-parallel-install
+SZPATH		= /home/sdi/Install/sz-2.1.12-install
+HDF5PATH	= /home/sdi/Install/hdf5-1.10.3-install
 
 ##   COMPILERS
 CC		= gcc
@@ -18,10 +18,10 @@ MPIRUN 		= mpirun
 ##=======================================================================
 
 #SZFLAGS		= -I$(SZPATH)/include $(SZPATH)/lib/libSZ.a $(SZPATH)/lib/libzlib.a $(SZPATH)/lib/libhdf5sz.a
-SZFLAGS		= -I$(SZPATH)/include -L$(SZPATH)/lib
+SZFLAGS		= -I$(SZPATH)/include -L$(SZPATH)/lib -Wl,-rpath,$(SZPATH)/lib
 
 #HDF5FLAGS	= -I$(HDF5PATH)/include $(HDF5PATH)/lib/libhdf5.a
-HDF5FLAGS	= -I$(HDF5PATH)/include -L$(HDF5PATH)/lib
+HDF5FLAGS	= -I$(HDF5PATH)/include -L$(HDF5PATH)/lib -Wl,-rpath,$(HDF5PATH)/lib
 
 ##=======================================================================
 ##   TARGETS

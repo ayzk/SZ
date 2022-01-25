@@ -257,6 +257,7 @@ int SZ_Init_Params(sz_params *params);
 size_t computeDataLength(size_t r5, size_t r4, size_t r3, size_t r2, size_t r1);
 
 int computeDimension(size_t r5, size_t r4, size_t r3, size_t r2, size_t r1);
+int filterDimension(size_t r5, size_t r4, size_t r3, size_t r2, size_t r1, size_t* correctedDimension);
 
 int SZ_compress_args_float_subblock(unsigned char* compressedBytes, float *oriData,
 size_t r5, size_t r4, size_t r3, size_t r2, size_t r1,
@@ -324,7 +325,11 @@ void convertBytesToSZParams(unsigned char* bytes, sz_params* params);
 
 unsigned char* SZ_compress_customize(const char* appName, void* userPara, int dataType, void* data, size_t r5, size_t r4, size_t r3, size_t r2, size_t r1, size_t *outSize, int *status);
 
+unsigned char* SZ_compress_customize_threadsafe(const char* cmprName, void* userPara, int dataType, void* data, size_t r5, size_t r4, size_t r3, size_t r2, size_t r1, size_t *outSize, int *status);
+
 void* SZ_decompress_customize(const char* appName, void* userPara, int dataType, unsigned char* bytes, size_t byteLength, size_t r5, size_t r4, size_t r3, size_t r2, size_t r1, int* status);
+
+void* SZ_decompress_customize_threadsafe(const char* cmprName, void* userPara, int dataType, unsigned char* bytes, size_t byteLength, size_t r5, size_t r4, size_t r3, size_t r2, size_t r1, int *status);
 
 #ifdef __cplusplus
 }

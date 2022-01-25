@@ -98,7 +98,7 @@ void SZ_compress_args_float_withinRange(unsigned char** newByteData, float *oriD
 size_t r5, size_t r4, size_t r3, size_t r2, size_t r1, size_t *outSize, 
 int errBoundMode, double absErr_Bound, double relBoundRatio, double pwrErrRatio);*/
 
-int SZ_compress_args_float(int cmprType, unsigned char** newByteData, float *oriData, 
+int SZ_compress_args_float(int cmprType, int withRegression, unsigned char** newByteData, float *oriData, 
 size_t r5, size_t r4, size_t r3, size_t r2, size_t r1, size_t *outSize, 
 int errBoundMode, double absErr_Bound, double relBoundRatio, double pwRelBoundRatio);
 

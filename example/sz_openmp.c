@@ -46,6 +46,7 @@ void usage()
 	printf("                      (the decompressed file will be named as <cmpred_file>.out if not specified)\n");
 	printf("	-p: print meta data (configuration info)\n");
 	printf("	-h: print the help information\n");
+	printf("	-v: print the version number\n");	
 	printf("* data type:\n");
 	printf("	-f: single precision (float type)\n");
 	printf("	-d: double precision (double type)\n");
@@ -132,6 +133,9 @@ int main(int argc, char* argv[])
 		{
 		case 'h':
 			usage();
+			exit(0);
+		case 'v':
+			printf("version: %d.%d.%d\n", SZ_VER_MAJOR, SZ_VER_MINOR, SZ_VER_BUILD);
 			exit(0);
 		case 'b': 
 			binaryOutput = 1;
@@ -309,7 +313,7 @@ int main(int argc, char* argv[])
 	
 	char outputFilePath[256];	
 	unsigned char *bytes = NULL; //the binary data read from "compressed data file"
-	size_t byteLength; 
+	size_t byteLength = 0; 
 	if(isCompression == 1)
 	{
 		if(absErrorBound != NULL)
@@ -343,7 +347,13 @@ int main(int argc, char* argv[])
 			if(parallelMode==0)
 			{
 				cost_start();
-				bytes = SZ_compress(SZ_FLOAT, data, &outSize, r5, r4, r3, r2, r1);
+				if(confparams_cpr->sol_ID==SZ)
+					bytes = SZ_compress(SZ_FLOAT, data, &outSize, r5, r4, r3, r2, r1);
+				else if(confparams_cpr->sol_ID==SZ_Transpose)
+				{
+					int status = 0;
+					bytes = SZ_compress_customize("SZ_Transpose", NULL, SZ_FLOAT, data, r5, r4, r3, r2, r1, &outSize, &status);
+				}	
 				cost_end();				
 			}
 			else if(parallelMode==1) //openMP
@@ -448,7 +458,13 @@ int main(int argc, char* argv[])
 				if(parallelMode==0)
 				{
 					cost_start();
-					bytes = SZ_compress(SZ_DOUBLE, data, &outSize, r5, r4, r3, r2, r1);
+					if(confparams_cpr->sol_ID==SZ)
+						bytes = SZ_compress(SZ_DOUBLE, data, &outSize, r5, r4, r3, r2, r1);
+					else if(confparams_cpr->sol_ID==SZ_Transpose)
+					{
+						int status = 0;
+						bytes = SZ_compress_customize("SZ_Transpose", NULL, SZ_DOUBLE, data, r5, r4, r3, r2, r1, &outSize, &status);
+					}	
 					cost_end();				
 				}
 				else if(parallelMode==1)//openMP
@@ -545,7 +561,11 @@ int main(int argc, char* argv[])
 			if(parallelMode==0)
 			{
 				cost_start();
-				data = SZ_decompress(SZ_FLOAT, bytes, byteLength, r5, r4, r3, r2, r1);			
+				float *data_ = SZ_decompress(SZ_FLOAT, bytes, byteLength, r5, r4, r3, r2, r1);	
+				if(confparams_dec->sol_ID==SZ_Transpose)
+					data = detransposeData(data_, SZ_FLOAT, r5, r4, r3, r2, r1);						
+				else
+					data = data_;
 				cost_end();
 			}
 			else if(parallelMode==1) //openMP
@@ -722,7 +742,11 @@ int main(int argc, char* argv[])
 					exit(0);
 				}
 				cost_start();
-				data = SZ_decompress(SZ_DOUBLE, bytes, byteLength, r5, r4, r3, r2, r1);			
+				double *data_ = SZ_decompress(SZ_DOUBLE, bytes, byteLength, r5, r4, r3, r2, r1);
+				if(confparams_dec->sol_ID==SZ_Transpose)
+					data = detransposeData(data_, SZ_DOUBLE, r5, r4, r3, r2, r1);
+				else //confparams_dec->sol_ID==SZ
+					data = data_;		
 				cost_end();
 				if(decPath == NULL)
 					sprintf(outputFilePath, "%s.out", cmpPath);	
@@ -838,11 +862,11 @@ int main(int argc, char* argv[])
 			
 		int szMode = 0;
 		unsigned char* bytes2 = NULL;
-		int isZlib = isZlibFormat(bytes[0], bytes[1]);
-		if(isZlib)
+		int losslessCompressor = is_lossless_compressed_data(bytes, byteLength);
+		if(losslessCompressor!=-1)
 		{
 			szMode = SZ_BEST_COMPRESSION;
-			zlib_uncompress65536bytes(bytes, (unsigned long)byteLength, &bytes2);	
+			sz_lossless_decompress65536bytes(losslessCompressor, bytes, (unsigned long)byteLength, &bytes2);	
 		}
 		else
 		{
@@ -864,9 +888,10 @@ int main(int argc, char* argv[])
 		}
 		SZ_printMetadata(metadata);
 		free(metadata->conf_params);
+		confparams_dec = NULL;
 		free(metadata);
 		
-		if(isZlib)
+		if(losslessCompressor!=-1)
 			free(bytes2);
 	}
 	else 

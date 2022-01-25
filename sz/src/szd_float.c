@@ -184,7 +184,8 @@ size_t cmpSize, int compressionType, float* hist_data)
 
 void decompressDataSeries_float_1D(float** data, size_t dataSeriesLength, float* hist_data, TightDataPointStorageF* tdps) 
 {
-	updateQuantizationInfo(tdps->intervals);
+	//updateQuantizationInfo(tdps->intervals);
+	int intvRadius = tdps->intervals/2;
 	size_t i, j, k = 0, p = 0, l = 0; // k is to track the location of residual_bit
 								// in resiMidBits, p is to track the
 								// byte_index of resiMidBits, l is for
@@ -264,7 +265,7 @@ void decompressDataSeries_float_1D(float** data, size_t dataSeriesLength, float*
 		default:
 			//predValue = 2 * (*data)[i-1] - (*data)[i-2];
 			predValue = (*data)[i-1];
-			(*data)[i] = predValue + (float)(type_-exe_params->intvRadius)*interval;
+			(*data)[i] = predValue + (float)(type_-intvRadius)*interval;
 			break;
 		}
 		//printf("%.30G\n",(*data)[i]);
@@ -282,7 +283,8 @@ void decompressDataSeries_float_1D(float** data, size_t dataSeriesLength, float*
 
 void decompressDataSeries_float_2D(float** data, size_t r1, size_t r2, float* hist_data, TightDataPointStorageF* tdps) 
 {
-	updateQuantizationInfo(tdps->intervals);
+	//updateQuantizationInfo(tdps->intervals);
+	int intvRadius = tdps->intervals/2;
 	//printf("tdps->intervals=%d, exe_params->intvRadius=%d\n", tdps->intervals, exe_params->intvRadius);
 	
 	size_t j, k = 0, p = 0, l = 0; // k is to track the location of residual_bit
@@ -371,7 +373,7 @@ void decompressDataSeries_float_2D(float** data, size_t r1, size_t r2, float* hi
 	if (type_ != 0)
 	{
 		pred1D = (*data)[0];
-		(*data)[1] = pred1D + 2 * (type_ - exe_params->intvRadius) * realPrecision;
+		(*data)[1] = pred1D + 2 * (type_ - intvRadius) * realPrecision;
 	}
 	else
 	{
@@ -424,7 +426,7 @@ void decompressDataSeries_float_2D(float** data, size_t r1, size_t r2, float* hi
 		if (type_ != 0)
 		{
 			pred1D = 2*(*data)[jj-1] - (*data)[jj-2];				
-			(*data)[jj] = pred1D + 2 * (type_ - exe_params->intvRadius) * realPrecision;
+			(*data)[jj] = pred1D + 2 * (type_ - intvRadius) * realPrecision;
 		}
 		else
 		{
@@ -482,7 +484,7 @@ void decompressDataSeries_float_2D(float** data, size_t r1, size_t r2, float* hi
 		if (type_ != 0)
 		{
 			pred1D = (*data)[index-r2];		
-			(*data)[index] = pred1D + 2 * (type_ - exe_params->intvRadius) * realPrecision;
+			(*data)[index] = pred1D + 2 * (type_ - intvRadius) * realPrecision;
 		}
 		else
 		{
@@ -537,7 +539,7 @@ void decompressDataSeries_float_2D(float** data, size_t r1, size_t r2, float* hi
 			type_ = type[index];
 			if (type_ != 0)
 			{
-				(*data)[index] = pred2D + 2 * (type_ - exe_params->intvRadius) * realPrecision;
+				(*data)[index] = pred2D + 2 * (type_ - intvRadius) * realPrecision;
 			}
 			else
 			{
@@ -597,7 +599,8 @@ void decompressDataSeries_float_2D(float** data, size_t r1, size_t r2, float* hi
 
 void decompressDataSeries_float_3D(float** data, size_t r1, size_t r2, size_t r3, float* hist_data, TightDataPointStorageF* tdps) 
 {
-	updateQuantizationInfo(tdps->intervals);
+	//updateQuantizationInfo(tdps->intervals);
+	int intvRadius = tdps->intervals/2;
 	size_t j, k = 0, p = 0, l = 0; // k is to track the location of residual_bit
 	// in resiMidBits, p is to track the
 	// byte_index of resiMidBits, l is for
@@ -682,7 +685,7 @@ void decompressDataSeries_float_3D(float** data, size_t r1, size_t r2, size_t r3
 	type_ = type[1];
 	if (type_ != 0)
 	{
-		(*data)[1] = pred1D + 2 * (type_ - exe_params->intvRadius) * realPrecision;
+		(*data)[1] = pred1D + 2 * (type_ - intvRadius) * realPrecision;
 	}
 	else
 	{
@@ -735,7 +738,7 @@ void decompressDataSeries_float_3D(float** data, size_t r1, size_t r2, size_t r3
 		type_ = type[jj];
 		if (type_ != 0)
 		{
-			(*data)[jj] = pred1D + 2 * (type_ - exe_params->intvRadius) * realPrecision;
+			(*data)[jj] = pred1D + 2 * (type_ - intvRadius) * realPrecision;
 		}
 		else
 		{
@@ -793,7 +796,7 @@ void decompressDataSeries_float_3D(float** data, size_t r1, size_t r2, size_t r3
 		type_ = type[index];
 		if (type_ != 0)
 		{
-			(*data)[index] = pred1D + 2 * (type_ - exe_params->intvRadius) * realPrecision;
+			(*data)[index] = pred1D + 2 * (type_ - intvRadius) * realPrecision;
 		}
 		else
 		{
@@ -848,7 +851,7 @@ void decompressDataSeries_float_3D(float** data, size_t r1, size_t r2, size_t r3
 			type_ = type[index];
 			if (type_ != 0)
 			{
-				(*data)[index] = pred2D + 2 * (type_ - exe_params->intvRadius) * realPrecision;
+				(*data)[index] = pred2D + 2 * (type_ - intvRadius) * realPrecision;
 			}
 			else
 			{
@@ -907,7 +910,7 @@ void decompressDataSeries_float_3D(float** data, size_t r1, size_t r2, size_t r3
 		type_ = type[index];
 		if (type_ != 0)
 		{
-			(*data)[index] = pred1D + 2 * (type_ - exe_params->intvRadius) * realPrecision;
+			(*data)[index] = pred1D + 2 * (type_ - intvRadius) * realPrecision;
 		}
 		else
 		{
@@ -962,7 +965,7 @@ void decompressDataSeries_float_3D(float** data, size_t r1, size_t r2, size_t r3
 			type_ = type[index];
 			if (type_ != 0)
 			{
-				(*data)[index] = pred2D + 2 * (type_ - exe_params->intvRadius) * realPrecision;
+				(*data)[index] = pred2D + 2 * (type_ - intvRadius) * realPrecision;
 			}
 			else
 			{
@@ -1019,7 +1022,7 @@ void decompressDataSeries_float_3D(float** data, size_t r1, size_t r2, size_t r3
 			type_ = type[index];
 			if (type_ != 0)
 			{
-				(*data)[index] = pred2D + 2 * (type_ - exe_params->intvRadius) * realPrecision;
+				(*data)[index] = pred2D + 2 * (type_ - intvRadius) * realPrecision;
 			}
 			else
 			{
@@ -1075,7 +1078,7 @@ void decompressDataSeries_float_3D(float** data, size_t r1, size_t r2, size_t r3
 				type_ = type[index];
 				if (type_ != 0)
 				{
-					(*data)[index] = pred3D + 2 * (type_ - exe_params->intvRadius) * realPrecision;
+					(*data)[index] = pred3D + 2 * (type_ - intvRadius) * realPrecision;
 				}
 				else
 				{
@@ -1136,7 +1139,8 @@ void decompressDataSeries_float_3D(float** data, size_t r1, size_t r2, size_t r3
 
 void decompressDataSeries_float_4D(float** data, size_t r1, size_t r2, size_t r3, size_t r4, float* hist_data, TightDataPointStorageF* tdps)
 {
-	updateQuantizationInfo(tdps->intervals);
+	//updateQuantizationInfo(tdps->intervals);
+	int intvRadius = tdps->intervals;
 	size_t j, k = 0, p = 0, l = 0; // k is to track the location of residual_bit
 	// in resiMidBits, p is to track the
 	// byte_index of resiMidBits, l is for
@@ -1230,7 +1234,7 @@ void decompressDataSeries_float_4D(float** data, size_t r1, size_t r2, size_t r3
 		type_ = type[index];
 		if (type_ != 0)
 		{
-			(*data)[index] = pred1D + 2 * (type_ - exe_params->intvRadius) * realPrecision;
+			(*data)[index] = pred1D + 2 * (type_ - intvRadius) * realPrecision;
 		}
 		else
 		{
@@ -1286,7 +1290,7 @@ void decompressDataSeries_float_4D(float** data, size_t r1, size_t r2, size_t r3
 			type_ = type[index];
 			if (type_ != 0)
 			{
-				(*data)[index] = pred1D + 2 * (type_ - exe_params->intvRadius) * realPrecision;
+				(*data)[index] = pred1D + 2 * (type_ - intvRadius) * realPrecision;
 			}
 			else
 			{
@@ -1344,7 +1348,7 @@ void decompressDataSeries_float_4D(float** data, size_t r1, size_t r2, size_t r3
 			type_ = type[index];
 			if (type_ != 0)
 			{
-				(*data)[index] = pred1D + 2 * (type_ - exe_params->intvRadius) * realPrecision;
+				(*data)[index] = pred1D + 2 * (type_ - intvRadius) * realPrecision;
 			}
 			else
 			{
@@ -1400,7 +1404,7 @@ void decompressDataSeries_float_4D(float** data, size_t r1, size_t r2, size_t r3
 				type_ = type[index];
 				if (type_ != 0)
 				{
-					(*data)[index] = pred2D + 2 * (type_ - exe_params->intvRadius) * realPrecision;
+					(*data)[index] = pred2D + 2 * (type_ - intvRadius) * realPrecision;
 				}
 				else
 				{
@@ -1460,7 +1464,7 @@ void decompressDataSeries_float_4D(float** data, size_t r1, size_t r2, size_t r3
 			type_ = type[index];
 			if (type_ != 0)
 			{
-				(*data)[index] = pred1D + 2 * (type_ - exe_params->intvRadius) * realPrecision;
+				(*data)[index] = pred1D + 2 * (type_ - intvRadius) * realPrecision;
 			}
 			else
 			{
@@ -1516,7 +1520,7 @@ void decompressDataSeries_float_4D(float** data, size_t r1, size_t r2, size_t r3
 				type_ = type[index];
 				if (type_ != 0)
 				{
-					(*data)[index] = pred2D + 2 * (type_ - exe_params->intvRadius) * realPrecision;
+					(*data)[index] = pred2D + 2 * (type_ - intvRadius) * realPrecision;
 				}
 				else
 				{
@@ -1574,7 +1578,7 @@ void decompressDataSeries_float_4D(float** data, size_t r1, size_t r2, size_t r3
 				type_ = type[index];
 				if (type_ != 0)
 				{
-					(*data)[index] = pred2D + 2 * (type_ - exe_params->intvRadius) * realPrecision;
+					(*data)[index] = pred2D + 2 * (type_ - intvRadius) * realPrecision;
 				}
 				else
 				{
@@ -1632,7 +1636,7 @@ void decompressDataSeries_float_4D(float** data, size_t r1, size_t r2, size_t r3
 					type_ = type[index];
 					if (type_ != 0)
 					{
-						(*data)[index] = pred3D + 2 * (type_ - exe_params->intvRadius) * realPrecision;
+						(*data)[index] = pred3D + 2 * (type_ - intvRadius) * realPrecision;
 					}
 					else
 					{
@@ -1697,7 +1701,9 @@ void decompressDataSeries_float_4D(float** data, size_t r1, size_t r2, size_t r3
 /*MSST19*/
 void decompressDataSeries_float_1D_MSST19(float** data, size_t dataSeriesLength, TightDataPointStorageF* tdps) 
 {
-	updateQuantizationInfo(tdps->intervals);
+	//updateQuantizationInfo(tdps->intervals);
+	int intvRadius = tdps->intervals/2;
+	int intvCapacity = tdps->intervals;
 	size_t i, j, k = 0, p = 0, l = 0; // k is to track the location of residual_bit
 								// in resiMidBits, p is to track the
 								// byte_index of resiMidBits, l is for
@@ -1725,10 +1731,10 @@ void decompressDataSeries_float_1D_MSST19(float** data, size_t dataSeriesLength,
 	reqBytesLength = tdps->reqLength/8;
 	resiBitsLength = tdps->reqLength%8;
 	//float threshold = tdps->minLogValue;
-	double* precisionTable = (double*)malloc(sizeof(double) * exe_params->intvCapacity);
+	double* precisionTable = (double*)malloc(sizeof(double) * intvCapacity);
 	double inv = 2.0-pow(2, -(tdps->plus_bits));
-	for(int i=0; i<exe_params->intvCapacity; i++){
-		double test = pow((1+tdps->realPrecision), inv*(i - exe_params->intvRadius));
+	for(int i=0; i<intvCapacity; i++){
+		double test = pow((1+tdps->realPrecision), inv*(i - intvRadius));
 		precisionTable[i] = test;
 	}
 
@@ -1801,7 +1807,9 @@ void decompressDataSeries_float_1D_MSST19(float** data, size_t dataSeriesLength,
 
 void decompressDataSeries_float_2D_MSST19(float** data, size_t r1, size_t r2, TightDataPointStorageF* tdps) 
 {
-	updateQuantizationInfo(tdps->intervals);
+	//updateQuantizationInfo(tdps->intervals);
+	int intvRadius = tdps->intervals/2;
+	int intvCapacity = tdps->intervals;
 	
 	size_t j, k = 0, p = 0, l = 0; // k is to track the location of residual_bit
 	// in resiMidBits, p is to track the
@@ -1833,10 +1841,10 @@ void decompressDataSeries_float_2D_MSST19(float** data, size_t r1, size_t r2, Ti
 	float exactData;
 	int type_;
 
-    double* precisionTable = (double*)malloc(sizeof(double) * exe_params->intvCapacity);
+    double* precisionTable = (double*)malloc(sizeof(double) * intvCapacity);
     double inv = 2.0-pow(2, -(tdps->plus_bits));
-    for(int i=0; i<exe_params->intvCapacity; i++){
-        double test = pow((1+tdps->realPrecision), inv*(i - exe_params->intvRadius));
+    for(int i=0; i<intvCapacity; i++){
+        double test = pow((1+tdps->realPrecision), inv*(i - intvRadius));
         precisionTable[i] = test;
     }
 
@@ -2120,7 +2128,9 @@ void decompressDataSeries_float_2D_MSST19(float** data, size_t r1, size_t r2, Ti
 
 void decompressDataSeries_float_3D_MSST19(float** data, size_t r1, size_t r2, size_t r3, TightDataPointStorageF* tdps) 
 {
-	updateQuantizationInfo(tdps->intervals);
+	//updateQuantizationInfo(tdps->intervals);
+	int intvRadius = tdps->intervals/2;
+	int intvCapacity = tdps->intervals;
 	size_t j, k = 0, p = 0, l = 0; // k is to track the location of residual_bit
 	// in resiMidBits, p is to track the
 	// byte_index of resiMidBits, l is for
@@ -2135,10 +2145,10 @@ void decompressDataSeries_float_3D_MSST19(float** data, size_t r1, size_t r2, si
 	*data = (float*)malloc(sizeof(float)*dataSeriesLength);
 	int* type = (int*)malloc(dataSeriesLength*sizeof(int));
 
-	double* precisionTable = (double*)malloc(sizeof(double) * exe_params->intvCapacity);
+	double* precisionTable = (double*)malloc(sizeof(double) * intvCapacity);
 	double inv = 2.0-pow(2, -(tdps->plus_bits));
-	for(int i=0; i<exe_params->intvCapacity; i++){
-		double test = pow((1+tdps->realPrecision), inv*(i - exe_params->intvRadius));
+	for(int i=0; i<intvCapacity; i++){
+		double test = pow((1+tdps->realPrecision), inv*(i - intvRadius));
 		precisionTable[i] = test;
 	}
 
@@ -2835,8 +2845,8 @@ void getSnapshotData_float_4D(float** data, size_t r1, size_t r2, size_t r3, siz
 	}
 }
 
-size_t decompressDataSeries_float_3D_RA_block(float * data, float mean, size_t dim_0, size_t dim_1, size_t dim_2, size_t block_dim_0, size_t block_dim_1, size_t block_dim_2, double realPrecision, int * type, float * unpredictable_data){
-
+size_t decompressDataSeries_float_3D_RA_block(float * data, float mean, size_t dim_0, size_t dim_1, size_t dim_2, size_t block_dim_0, size_t block_dim_1, size_t block_dim_2, float realPrecision, int * type, float * unpredictable_data){
+	int intvRadius = exe_params->intvRadius;
 	size_t dim0_offset = dim_1 * dim_2;
 	size_t dim1_offset = dim_2;
 	// printf("SZ_compress_float_3D_MDQ_RA_block real dim: %d %d %d\n", real_block_dims[0], real_block_dims[1], real_block_dims[2]);
@@ -2859,7 +2869,7 @@ size_t decompressDataSeries_float_3D_RA_block(float * data, float mean, size_t d
 	type_ = type[0];
 	// printf("Type 0 %d, mean %.4f\n", type_, mean);
 	if (type_ != 0){
-		cur_data_pos[0] = pred1D + 2 * (type_ - exe_params->intvRadius) * realPrecision;
+		cur_data_pos[0] = pred1D + 2 * (type_ - intvRadius) * realPrecision;
 	}
 	else{
 		cur_data_pos[0] = unpredictable_data[unpredictable_count ++];
@@ -2869,7 +2879,7 @@ size_t decompressDataSeries_float_3D_RA_block(float * data, float mean, size_t d
 	pred1D = cur_data_pos[0];
 	type_ = type[1];
 	if (type_ != 0){
-		cur_data_pos[1] = pred1D + 2 * (type_ - exe_params->intvRadius) * realPrecision;
+		cur_data_pos[1] = pred1D + 2 * (type_ - intvRadius) * realPrecision;
 	}
 	else{
 		cur_data_pos[1] = unpredictable_data[unpredictable_count ++];
@@ -2879,7 +2889,7 @@ size_t decompressDataSeries_float_3D_RA_block(float * data, float mean, size_t d
 		pred1D = 2*cur_data_pos[j-1] - cur_data_pos[j-2];
 		type_ = type[j];
 		if (type_ != 0){
-			cur_data_pos[j] = pred1D + 2 * (type_ - exe_params->intvRadius) * realPrecision;
+			cur_data_pos[j] = pred1D + 2 * (type_ - intvRadius) * realPrecision;
 		}
 		else{
 			cur_data_pos[j] = unpredictable_data[unpredictable_count ++];
@@ -2900,7 +2910,7 @@ size_t decompressDataSeries_float_3D_RA_block(float * data, float mean, size_t d
 		pred1D = last_row_pos[0];
 		type_ = type[index];
 		if (type_ != 0){
-			cur_data_pos[0] = pred1D + 2 * (type_ - exe_params->intvRadius) * realPrecision;
+			cur_data_pos[0] = pred1D + 2 * (type_ - intvRadius) * realPrecision;
 		}
 		else{
 			cur_data_pos[0] = unpredictable_data[unpredictable_count ++];
@@ -2912,7 +2922,7 @@ size_t decompressDataSeries_float_3D_RA_block(float * data, float mean, size_t d
 			pred2D = cur_data_pos[j-1] + last_row_pos[j] - last_row_pos[j-1];
 			type_ = type[index];
 			if (type_ != 0){
-				cur_data_pos[j] = pred2D + 2 * (type_ - exe_params->intvRadius) * realPrecision;
+				cur_data_pos[j] = pred2D + 2 * (type_ - intvRadius) * realPrecision;
 			}
 			else{
 				cur_data_pos[j] = unpredictable_data[unpredictable_count ++];
@@ -2942,7 +2952,7 @@ size_t decompressDataSeries_float_3D_RA_block(float * data, float mean, size_t d
 		pred1D = cur_data_pos[- dim0_offset];
 		type_ = type[index];
 		if (type_ != 0){
-			cur_data_pos[0] = pred1D + 2 * (type_ - exe_params->intvRadius) * realPrecision;
+			cur_data_pos[0] = pred1D + 2 * (type_ - intvRadius) * realPrecision;
 		}
 		else{
 			cur_data_pos[0] = unpredictable_data[unpredictable_count ++];
@@ -2955,7 +2965,7 @@ size_t decompressDataSeries_float_3D_RA_block(float * data, float mean, size_t d
 			pred2D = cur_data_pos[j-1] + cur_data_pos[j - dim0_offset] - cur_data_pos[j - 1 - dim0_offset];
 			type_ = type[index];
 			if (type_ != 0){
-				cur_data_pos[j] = pred2D + 2 * (type_ - exe_params->intvRadius) * realPrecision;
+				cur_data_pos[j] = pred2D + 2 * (type_ - intvRadius) * realPrecision;
 			}
 			else{
 				cur_data_pos[j] = unpredictable_data[unpredictable_count ++];
@@ -2983,7 +2993,7 @@ size_t decompressDataSeries_float_3D_RA_block(float * data, float mean, size_t d
 			pred2D = last_row_pos[0] + cur_data_pos[- dim0_offset] - last_row_pos[- dim0_offset];
 			type_ = type[index];
 			if (type_ != 0){
-				cur_data_pos[0] = pred2D + 2 * (type_ - exe_params->intvRadius) * realPrecision;
+				cur_data_pos[0] = pred2D + 2 * (type_ - intvRadius) * realPrecision;
 			}
 			else{
 				cur_data_pos[0] = unpredictable_data[unpredictable_count ++];
@@ -2999,7 +3009,7 @@ size_t decompressDataSeries_float_3D_RA_block(float * data, float mean, size_t d
 				pred3D = cur_data_pos[j-1] + last_row_pos[j]+ cur_data_pos[j - dim0_offset] - last_row_pos[j-1] - last_row_pos[j - dim0_offset] - cur_data_pos[j-1 - dim0_offset] + last_row_pos[j-1 - dim0_offset];
 				type_ = type[index];
 				if (type_ != 0){
-					cur_data_pos[j] = pred3D + 2 * (type_ - exe_params->intvRadius) * realPrecision;
+					cur_data_pos[j] = pred3D + 2 * (type_ - intvRadius) * realPrecision;
 				}
 				else{
 					cur_data_pos[j] = unpredictable_data[unpredictable_count ++];
@@ -3015,7 +3025,7 @@ size_t decompressDataSeries_float_3D_RA_block(float * data, float mean, size_t d
 }
 
 size_t decompressDataSeries_float_1D_RA_block(float * data, float mean, size_t dim_0, size_t block_dim_0, double realPrecision, int * type, float * unpredictable_data){
-
+	int intvRadius = exe_params->intvRadius;
 	size_t unpredictable_count = 0;
 	
 	float * cur_data_pos = data;
@@ -3029,7 +3039,7 @@ size_t decompressDataSeries_float_1D_RA_block(float * data, float mean, size_t d
 			last_over_thres = cur_data_pos[0];
 		}
 		else{
-			cur_data_pos[0] = last_over_thres + 2 * (type_ - exe_params->intvRadius) * realPrecision;
+			cur_data_pos[0] = last_over_thres + 2 * (type_ - intvRadius) * realPrecision;
 			last_over_thres = cur_data_pos[0];
 		}
 
@@ -3041,7 +3051,7 @@ size_t decompressDataSeries_float_1D_RA_block(float * data, float mean, size_t d
 }
 
 size_t decompressDataSeries_float_2D_RA_block(float * data, float mean, size_t dim_0, size_t dim_1, size_t block_dim_0, size_t block_dim_1, double realPrecision, int * type, float * unpredictable_data){
-
+	int intvRadius = exe_params->intvRadius;
 	size_t dim0_offset = dim_1;
 	// printf("SZ_compress_float_3D_MDQ_RA_block real dim: %d %d %d\n", real_block_dims[0], real_block_dims[1], real_block_dims[2]);
 	// fflush(stdout);
@@ -3061,7 +3071,7 @@ size_t decompressDataSeries_float_2D_RA_block(float * data, float mean, size_t d
 	type_ = type[0];
 	// printf("Type 0 %d, mean %.4f\n", type_, mean);
 	if (type_ != 0){
-		cur_data_pos[0] = pred1D + 2 * (type_ - exe_params->intvRadius) * realPrecision;
+		cur_data_pos[0] = pred1D + 2 * (type_ - intvRadius) * realPrecision;
 	}
 	else{
 		cur_data_pos[0] = unpredictable_data[unpredictable_count ++];
@@ -3071,7 +3081,7 @@ size_t decompressDataSeries_float_2D_RA_block(float * data, float mean, size_t d
 	pred1D = cur_data_pos[0];
 	type_ = type[1];
 	if (type_ != 0){
-		cur_data_pos[1] = pred1D + 2 * (type_ - exe_params->intvRadius) * realPrecision;
+		cur_data_pos[1] = pred1D + 2 * (type_ - intvRadius) * realPrecision;
 	}
 	else{
 		cur_data_pos[1] = unpredictable_data[unpredictable_count ++];
@@ -3081,7 +3091,7 @@ size_t decompressDataSeries_float_2D_RA_block(float * data, float mean, size_t d
 		pred1D = 2*cur_data_pos[j-1] - cur_data_pos[j-2];
 		type_ = type[j];
 		if (type_ != 0){
-			cur_data_pos[j] = pred1D + 2 * (type_ - exe_params->intvRadius) * realPrecision;
+			cur_data_pos[j] = pred1D + 2 * (type_ - intvRadius) * realPrecision;
 		}
 		else{
 			cur_data_pos[j] = unpredictable_data[unpredictable_count ++];
@@ -3102,7 +3112,7 @@ size_t decompressDataSeries_float_2D_RA_block(float * data, float mean, size_t d
 		type_ = type[index];
 		if (type_ != 0){
 			pred1D = last_row_pos[0];
-			cur_data_pos[0] = pred1D + 2 * (type_ - exe_params->intvRadius) * realPrecision;
+			cur_data_pos[0] = pred1D + 2 * (type_ - intvRadius) * realPrecision;
 		}
 		else{
 			cur_data_pos[0] = unpredictable_data[unpredictable_count ++];
@@ -3114,7 +3124,7 @@ size_t decompressDataSeries_float_2D_RA_block(float * data, float mean, size_t d
 			pred2D = cur_data_pos[j-1] + last_row_pos[j] - last_row_pos[j-1];
 			type_ = type[index];
 			if (type_ != 0){
-				cur_data_pos[j] = pred2D + 2 * (type_ - exe_params->intvRadius) * realPrecision;
+				cur_data_pos[j] = pred2D + 2 * (type_ - intvRadius) * realPrecision;
 			}
 			else{
 				cur_data_pos[j] = unpredictable_data[unpredictable_count ++];
@@ -3157,7 +3167,7 @@ void decompressDataSeries_float_2D_nonblocked_with_blocked_regression(float** da
 	unsigned int intervals = bytesToInt_bigEndian(comp_data_pos);
 	comp_data_pos += sizeof(int);
 
-	updateQuantizationInfo(intervals);
+	//updateQuantizationInfo(intervals);
 
 	unsigned int tree_size = bytesToInt_bigEndian(comp_data_pos);
 	comp_data_pos += sizeof(int);
@@ -3220,7 +3230,7 @@ void decompressDataSeries_float_2D_nonblocked_with_blocked_regression(float** da
 	float last_coefficients[3] = {0.0};
 	int coeff_unpred_data_count[3] = {0};
 	int coeff_index = 0;
-	updateQuantizationInfo(intervals);
+	//updateQuantizationInfo(intervals);
 
 	size_t total_unpred;
 	memcpy(&total_unpred, comp_data_pos, sizeof(size_t));
@@ -3232,7 +3242,7 @@ void decompressDataSeries_float_2D_nonblocked_with_blocked_regression(float** da
 	decode(comp_data_pos, num_elements, root, result_type);
 	SZ_ReleaseHuffman(huffmanTree);
 	
-	int intvRadius = exe_params->intvRadius;
+	int intvRadius = intervals/2;
 	
 	int * type;
 
@@ -3502,7 +3512,7 @@ void decompressDataSeries_float_3D_nonblocked_with_blocked_regression(float** da
 	unsigned int intervals = bytesToInt_bigEndian(comp_data_pos);
 	comp_data_pos += sizeof(int);
 
-	updateQuantizationInfo(intervals);
+	//updateQuantizationInfo(intervals);
 
 	unsigned int tree_size = bytesToInt_bigEndian(comp_data_pos);
 	comp_data_pos += sizeof(int);
@@ -3563,7 +3573,7 @@ void decompressDataSeries_float_3D_nonblocked_with_blocked_regression(float** da
 	float last_coefficients[4] = {0.0};
 	int coeff_unpred_data_count[4] = {0};
 	int coeff_index = 0;
-	updateQuantizationInfo(intervals);
+	//updateQuantizationInfo(intervals);
 
 	size_t total_unpred;
 	memcpy(&total_unpred, comp_data_pos, sizeof(size_t));
@@ -3575,7 +3585,7 @@ void decompressDataSeries_float_3D_nonblocked_with_blocked_regression(float** da
 	decode(comp_data_pos, num_elements, root, result_type);
 	SZ_ReleaseHuffman(huffmanTree);
 	
-	int intvRadius = exe_params->intvRadius;
+	int intvRadius = intervals/2;
 	
 	int * type;
 	float * data_pos = *data;
@@ -5881,7 +5891,7 @@ void decompressDataSeries_float_3D_random_access_with_blocked_regression(float**
 	unsigned int intervals = bytesToInt_bigEndian(comp_data_pos);
 	comp_data_pos += sizeof(int);
 
-	updateQuantizationInfo(intervals);
+	//updateQuantizationInfo(intervals);
 
 	unsigned int tree_size = bytesToInt_bigEndian(comp_data_pos);
 	comp_data_pos += sizeof(int);
@@ -5942,7 +5952,7 @@ void decompressDataSeries_float_3D_random_access_with_blocked_regression(float**
 	float last_coefficients[4] = {0.0};
 	int coeff_unpred_data_count[4] = {0};
 	int coeff_index = 0;
-	updateQuantizationInfo(intervals);
+	//updateQuantizationInfo(intervals);
 
 	size_t total_unpred;
 	memcpy(&total_unpred, comp_data_pos, sizeof(size_t));
@@ -5954,7 +5964,7 @@ void decompressDataSeries_float_3D_random_access_with_blocked_regression(float**
 	decode(comp_data_pos, num_blocks*max_num_block_elements, root, result_type);
 	SZ_ReleaseHuffman(huffmanTree);
 	
-	int intvRadius = exe_params->intvRadius;
+	int intvRadius = intervals/2;
 	
 	int * type;
 	float * data_pos = *data;
@@ -6217,7 +6227,7 @@ void decompressDataSeries_float_3D_decompression_random_access_with_blocked_regr
 	unsigned int intervals = bytesToInt_bigEndian(comp_data_pos);
 	comp_data_pos += sizeof(int);
 
-	updateQuantizationInfo(intervals);
+	//updateQuantizationInfo(intervals);
 
 	unsigned int tree_size = bytesToInt_bigEndian(comp_data_pos);
 	comp_data_pos += sizeof(int);
@@ -6278,8 +6288,8 @@ void decompressDataSeries_float_3D_decompression_random_access_with_blocked_regr
 	float last_coefficients[4] = {0.0};
 	int coeff_unpred_data_count[4] = {0};
 	int coeff_index = 0;
-	updateQuantizationInfo(intervals);
-	int intvRadius = exe_params->intvRadius;
+	//updateQuantizationInfo(intervals);
+	int intvRadius = intervals/2;
 
 	size_t total_unpred;
 	memcpy(&total_unpred, comp_data_pos, sizeof(size_t));
@@ -6572,7 +6582,7 @@ void decompressDataSeries_float_1D_decompression_given_areas_with_blocked_regres
 	unsigned int intervals = bytesToInt_bigEndian(comp_data_pos);
 	comp_data_pos += sizeof(int);
 
-	updateQuantizationInfo(intervals);
+	//updateQuantizationInfo(intervals);
 
 	unsigned int tree_size = bytesToInt_bigEndian(comp_data_pos);
 	comp_data_pos += sizeof(int);
@@ -6658,8 +6668,8 @@ void decompressDataSeries_float_1D_decompression_given_areas_with_blocked_regres
 		reg_params_pos += 2;
 	}
 
-	updateQuantizationInfo(intervals);
-	int intvRadius = exe_params->intvRadius;
+	//updateQuantizationInfo(intervals);
+	int intvRadius = intervals/2;
 
 	size_t total_unpred;
 	memcpy(&total_unpred, comp_data_pos, sizeof(size_t));
@@ -6878,7 +6888,7 @@ void decompressDataSeries_float_2D_decompression_given_areas_with_blocked_regres
 	unsigned int intervals = bytesToInt_bigEndian(comp_data_pos);
 	comp_data_pos += sizeof(int);
 
-	updateQuantizationInfo(intervals);
+	//updateQuantizationInfo(intervals);
 
 	unsigned int tree_size = bytesToInt_bigEndian(comp_data_pos);
 	comp_data_pos += sizeof(int);
@@ -6964,8 +6974,8 @@ void decompressDataSeries_float_2D_decompression_given_areas_with_blocked_regres
 		reg_params_pos += 3;
 	}
 
-	updateQuantizationInfo(intervals);
-	int intvRadius = exe_params->intvRadius;
+	//updateQuantizationInfo(intervals);
+	int intvRadius = intervals/2;
 
 	size_t total_unpred;
 	memcpy(&total_unpred, comp_data_pos, sizeof(size_t));
@@ -7223,7 +7233,7 @@ void decompressDataSeries_float_3D_decompression_given_areas_with_blocked_regres
 	unsigned int intervals = bytesToInt_bigEndian(comp_data_pos);
 	comp_data_pos += sizeof(int);
 
-	updateQuantizationInfo(intervals);
+	//updateQuantizationInfo(intervals);
 
 	unsigned int tree_size = bytesToInt_bigEndian(comp_data_pos);
 	comp_data_pos += sizeof(int);
@@ -7309,8 +7319,8 @@ void decompressDataSeries_float_3D_decompression_given_areas_with_blocked_regres
 		reg_params_pos += 4;
 	}
 
-	updateQuantizationInfo(intervals);
-	int intvRadius = exe_params->intvRadius;
+	//updateQuantizationInfo(intervals);
+	int intvRadius = intervals/2;
 
 	size_t total_unpred;
 	memcpy(&total_unpred, comp_data_pos, sizeof(size_t));

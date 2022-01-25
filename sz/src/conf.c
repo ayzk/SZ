@@ -74,8 +74,10 @@ double computeABSErrBoundFromNORM_ERR(double normErr, size_t nbEle)
 int SZ_ReadConf(const char* sz_cfgFile) {
     // Check access to SZ configuration file and load dictionary
     //record the setting in confparams_cpr
-    confparams_cpr = (sz_params*)malloc(sizeof(sz_params));    
+    confparams_cpr = (sz_params*)malloc(sizeof(sz_params));   
+    memset(confparams_cpr,0,sizeof(sz_params)); 
     exe_params = (sz_exedata*)malloc(sizeof(sz_exedata));
+    memset(exe_params,0,sizeof(sz_exedata)); 
     
     int x = 1;
     char sol_name[256];

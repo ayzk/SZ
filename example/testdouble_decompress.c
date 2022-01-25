@@ -39,7 +39,7 @@ int main(int argc, char * argv[])
 {
     size_t r5=0,r4=0,r3=0,r2=0,r1=0;
     size_t nbEle, totalNbEle;
-    char zipFilePath[640], outputFilePath[640];
+    char zipFilePath[640], outputFilePath[650];
     
     if(argc < 2)
     {
@@ -103,7 +103,7 @@ int main(int argc, char * argv[])
     //SZ_Finalize();
     
 
-    char oriFilePath[640];
+    char oriFilePath[650];
     strncpy(oriFilePath, zipFilePath, (unsigned)strlen(zipFilePath)-3);
     oriFilePath[strlen(zipFilePath)-3] = '\0';
     double *ori_data = readDoubleData(oriFilePath, &totalNbEle, &status);
