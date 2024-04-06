@@ -365,8 +365,27 @@ int main(int argc, char* argv[])
 				sprintf(outputFilePath, "%s.sz", inPath);
 			else
 				strcpy(outputFilePath, cmpPath);
-			writeByteData(bytes, byteLength, outputFilePath, &status);		
-			free(data);
+			writeByteData(bytes, byteLength, outputFilePath, &status);
+            size_t data_size = sizeof(float);
+            if (r1 != 0) {
+                data_size *= r1;
+            }
+            if (r2 != 0) {
+                data_size *= r2;
+            }
+            if (r3 != 0) {
+                data_size *= r3;
+            }
+            if (r4 != 0) {
+                data_size *= r4;
+            }
+            if (r5 != 0) {
+                data_size *= r5;
+            }
+
+            printf("compression ratio = %.2f \n", data_size * 1.0 / byteLength);
+
+            free(data);
 			if(status != SZ_SCES)
 			{
 				printf("Error: data file %s cannot be written!\n", outputFilePath);
@@ -454,8 +473,26 @@ int main(int argc, char* argv[])
 					sprintf(outputFilePath, "%s.sz", inPath);
 				else
 					strcpy(outputFilePath, cmpPath);
-				writeByteData(bytes, byteLength, outputFilePath, &status);		
+				writeByteData(bytes, byteLength, outputFilePath, &status);
 				free(data);
+                size_t data_size = sizeof(double);
+                if (r1 != 0) {
+                    data_size *= r1;
+                }
+                if (r2 != 0) {
+                    data_size *= r2;
+                }
+                if (r3 != 0) {
+                    data_size *= r3;
+                }
+                if (r4 != 0) {
+                    data_size *= r4;
+                }
+                if (r5 != 0) {
+                    data_size *= r5;
+                }
+
+                printf("compression ratio = %.2f \n", data_size * 1.0 / byteLength);
 				if(status != SZ_SCES)
 				{
 					printf("Error: data file %s cannot be written!\n", outputFilePath);
